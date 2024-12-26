@@ -1,0 +1,35 @@
+<h1>{{ user.username }}의 프로필</h1>
+<p>위치: {{ user.profile.location }}</p>
+
+<!-- 팔로우/언팔로우 버튼 -->
+<h2>팔로우 상태</h2>
+<p>팔로워: {{ user.profile.followers.count }}</p>
+<p>팔로잉: {{ user.following.count }}</p>
+
+{% if user != request.user %}
+    {% if request.user in user.profile.followers.all %}
+        <a href="{% url 'follow_user' user.username %}">언팔로우</a>
+    {% else %}
+        <a href="{% url 'follow_user' user.username %}">팔로우</a>
+    {% endif %}
+{% endif %}
+
+<!-- 등록한 물건 -->
+<h2>등록한 물건</h2>
+<ul>
+    {% for product in products %}
+        <li>{{ product.name }} - {{ product.description }}</li>
+    {% empty %}
+        <li>등록한 물건이 없습니다.</li>
+    {% endfor %}
+</ul>
+
+<!-- 찜한 물건 -->
+<h2>찜한 물건</h2>
+<ul>
+    {% for product in liked_products %}
+        <li>{{ product.name }}</li>
+    {% empty %}
+        <li>찜한 물건이 없습니다.</li>
+    {% endfor %}
+</ul>

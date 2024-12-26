@@ -1,0 +1,8 @@
+<h1>상품 수정</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">저장</button>
+</form>
+<a href="{% url 'product_list' %}">취소</a>
+<a href="{% url 'product_list' %}">리스트로 돌아가기</a>

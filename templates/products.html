@@ -1,0 +1,12 @@
+<ul>
+    {% for product in products %}
+        <li>
+            {{ product.name }} - {{ product.description }}
+            {% if user in product.liked_by.all %}
+                <a href="{% url 'like_product' product.id %}">찜 취소</a>
+            {% else %}
+                <a href="{% url 'like_product' product.id %}">찜하기</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
