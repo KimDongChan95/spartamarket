@@ -1,36 +1,38 @@
+<!-- products/product_detail.html -->
 <h1>{{ product.name }}</h1>
 <p>가격: {{ product.price }}</p>
 <p>{{ product.description }}</p>
 <p>작성자: {{ product.created_by.username }}</p>
 
-<h3>현재 찜목록</h3>
-<ul>
-    {% for item in user.찜목록.all %}
-        <li>{{ item.name }}</li>
-    {% endfor %}
-</ul>
-
-<h3>찜 가능한 아이템</h3>
-{% for item in items %}
-    <div>
-        <h3>{{ item.name }}</h3>
-        <p>{{ item.description }}</p>
-        <form action="/찜하기/{{ item.id }}/" method="POST">
-            {% csrf_token %}
-            <button type="submit">
-                {% if item in user.찜목록.all %}
-                    찜 취소
-                {% else %}
-                    찜하기
-                {% endif %}
-            </button>
-        </form>
-    </div>
-{% endfor %}
-
-<a href="{% url 'product_update' product.id %}">수정</a>
-<form action="{% url 'product_delete' product.id %}" method="post" style="display:inline;">
+<!-- 찜하기/찜 취소 버튼 -->
+<form action="{% url 'toggle_like' product.id %}" method="POST">
     {% csrf_token %}
-    <button type="submit">삭제</button>
+    <button type="submit">
+        {% if is_liked %}
+            찜 취소
+        {% else %}
+            찜하기
+        {% endif %}
+    </button>
 </form>
-<a href="{% url 'product_list' %}">리스트로 돌아가기</a>
+
+<hr>
+{% if request.user == product.created_by %}
+    <!-- 수정 버튼 -->
+    <form action="{% url 'product_update' product.id %}" method="GET" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">수정</button>
+    </form>
+
+    <!-- 삭제 버튼 -->
+    <form action="{% url 'product_delete' product.id %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">삭제</button>
+    </form>
+{% endif %}
+
+
+<form action="{% url 'product_list' %}" method="GET" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">리스트로 돌아가기</button>
+</form>

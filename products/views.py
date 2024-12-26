@@ -36,7 +36,13 @@ def product_list(request):
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     is_liked = request.user.is_authenticated and product.liked_by.filter(id=request.user.id).exists()
-    return render(request, 'products/product_detail.html', {'product': product, 'is_liked': is_liked})
+    wishlist_items = Wishlist.objects.filter(user=request.user)  # 현재 사용자의 찜 목록 가져오기
+
+    return render(request, 'products/product_detail.html', {
+        'product': product,
+        'is_liked': is_liked,
+        'wishlist_items': wishlist_items,  # 찜 목록 전달
+    })
 
 # 3. 상품 등록
 @login_required
@@ -82,11 +88,10 @@ def toggle_like(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.user in product.liked_by.all():
         product.liked_by.remove(request.user)
-        is_liked = False
     else:
         product.liked_by.add(request.user)
-        is_liked = True
-    return JsonResponse({'is_liked': is_liked})
+    # 찜하기/찜 취소 후 상세 페이지로 리다이렉트
+    return redirect('product_detail', pk=pk)
 
 @login_required
 def add_to_wishlist(request, product_id):
