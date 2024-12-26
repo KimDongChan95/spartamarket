@@ -3,27 +3,31 @@
 <p>{{ product.description }}</p>
 <p>작성자: {{ product.created_by.username }}</p>
 
-{% if user.is_authenticated %}
-    <button id="like-button" data-id="{{ product.id }}">
-        {% if is_liked %}
-            찜 취소
-        {% else %}
-            찜하기
-        {% endif %}
-    </button>
-    <script>
-        document.getElementById('like-button').addEventListener('click', function() {
-            const productId = this.getAttribute('data-id');
-            fetch(`/${productId}/like/`, {
-                method: 'POST',
-                headers: {'X-CSRFToken': '{{ csrf_token }}'}
-            }).then(response => response.json())
-              .then(data => {
-                  this.textContent = data.is_liked ? '찜 취소' : '찜하기';
-              });
-        });
-    </script>
-{% endif %}
+<h3>현재 찜목록</h3>
+<ul>
+    {% for item in user.찜목록.all %}
+        <li>{{ item.name }}</li>
+    {% endfor %}
+</ul>
+
+<h3>찜 가능한 아이템</h3>
+{% for item in items %}
+    <div>
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.description }}</p>
+        <form action="/찜하기/{{ item.id }}/" method="POST">
+            {% csrf_token %}
+            <button type="submit">
+                {% if item in user.찜목록.all %}
+                    찜 취소
+                {% else %}
+                    찜하기
+                {% endif %}
+            </button>
+        </form>
+    </div>
+{% endfor %}
+
 <a href="{% url 'product_update' product.id %}">수정</a>
 <form action="{% url 'product_delete' product.id %}" method="post" style="display:inline;">
     {% csrf_token %}

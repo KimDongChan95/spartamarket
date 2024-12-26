@@ -1,9 +1,10 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, redirect
 from .models import Product
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from .models import Product, Wishlist
+from django.shortcuts import render, redirect, get_object_or_404
+
 
 def like_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -86,3 +87,26 @@ def toggle_like(request, pk):
         product.liked_by.add(request.user)
         is_liked = True
     return JsonResponse({'is_liked': is_liked})
+
+@login_required
+def add_to_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product=product)
+    if created:
+        print(f"[DEBUG] 찜 추가됨: {wishlist_item.product.name} by {request.user.username}")
+    else:
+        print(f"[DEBUG] 이미 찜한 상품: {wishlist_item.product.name} by {request.user.username}")
+    return redirect('wishlist')
+
+@login_required
+def remove_from_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    Wishlist.objects.filter(user=request.user, product=product).delete()
+    print(f"찜 취소됨: {product.name} by {request.user.username}")
+    return redirect('wishlist')
+
+@login_required
+def wishlist(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+    return render(request, 'products/wishlist.html', {'wishlist_items': wishlist_items})
+

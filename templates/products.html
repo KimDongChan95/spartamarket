@@ -1,12 +1,12 @@
-<ul>
-    {% for product in products %}
-        <li>
-            {{ product.name }} - {{ product.description }}
-            {% if user in product.liked_by.all %}
-                <a href="{% url 'like_product' product.id %}">찜 취소</a>
-            {% else %}
-                <a href="{% url 'like_product' product.id %}">찜하기</a>
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+{% for product in products %}
+  <div>
+    <h2>{{ product.name }}</h2>
+    <p>{{ product.description }}</p>
+    <p>{{ product.price }}</p>
+    {% if product in user.wishlist_set.all|map:"product" %}
+      <a href="{% url 'remove_from_wishlist' product.id %}">찜 취소</a>
+    {% else %}
+      <a href="{% url 'add_to_wishlist' product.id %}">찜하기</a>
+    {% endif %}
+  </div>
+{% endfor %}

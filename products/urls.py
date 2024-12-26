@@ -9,4 +9,7 @@ urlpatterns = [
     path('<int:pk>/update/', views.product_update, name='product_update'),
     path('<int:pk>/delete/', views.product_delete, name='product_delete'),
     path('<int:pk>/like/', views.toggle_like, name='toggle_like'),
+    path('wishlist/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/remove/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
+    path('wishlist/', views.wishlist, name='wishlist'),
 ]
